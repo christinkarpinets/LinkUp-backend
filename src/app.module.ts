@@ -1,11 +1,26 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ProductModule } from './product/product.module';
+import { TypeOrmService } from './typeorm/typeorm.service';
+import { UserModule } from './user/user.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [
+    TypeOrmModule.forRootAsync({ useClass: TypeOrmService }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    ProductModule,
+    UserModule,
+    OrderModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private configService: ConfigService) {}
+}
