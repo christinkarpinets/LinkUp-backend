@@ -7,15 +7,32 @@ import { Product } from './entities/product.entity';
 @Injectable()
 export class ProductService {
   constructor(
-    @InjectRepository(Product) private product: Repository<Product>,
-    @InjectRepository(Category) private category: Repository<Category>,
+    @InjectRepository(Product) private prodRepo: Repository<Product>,
+    @InjectRepository(Category) private categoryRepo: Repository<Category>,
   ) {}
 
-  findAll() {
-    return `This action returns all products`;
+  homePage() {
+    return {
+      categories: this.findAllCategories(),
+      products: this.findAllProducts(),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  findProdByCategory(category: string) {
+    return this.prodRepo
+      .createQueryBuilder('prod')
+      .where('prod.category = :category', { category: category });
+  }
+
+  findAllCategories() {
+    return this.categoryRepo.find();
+  }
+
+  findAllProducts() {
+    return this.prodRepo.find();
+  }
+
+  async findOne(id: number): Promise<Product | undefined> {
+    return this.prodRepo.findOne({ where: { id: id } });
   }
 }

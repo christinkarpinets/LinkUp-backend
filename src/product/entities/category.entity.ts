@@ -12,6 +12,9 @@ export class Category {
   @Column('text')
   description: string;
 
+  @Column({ type: 'bytea' })
+  image: Buffer;
+
   @OneToMany(() => Product, (product) => product.category)
   products: Product[];
 }

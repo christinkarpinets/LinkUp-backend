@@ -32,6 +32,9 @@ export class Product {
   @Column('int')
   soldCount: number;
 
+  @Column({ type: 'bytea' })
+  image: Buffer;
+
   @ManyToOne(() => Category, (category) => category.products)
   @JoinColumn()
   category: Category;
