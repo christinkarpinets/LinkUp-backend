@@ -23,13 +23,5 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       id: payload.sub,
       name: payload.email,
     };
-    /*
-    const user = await this.authService.login(loginDto);
-
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    return user;*/
   }
 }
