@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductService } from 'src/product/product.service';
 import { UserService } from 'src/user/user.service';
@@ -26,6 +26,13 @@ export class OrderService {
     const status = await this.findOrCreateOrderStatus(
       createOrderDto.orderStatusName,
     );
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    if (!item) {
+      throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
+    }
 
     const order = this.orderRepo.create({
       user: user,
@@ -66,6 +73,13 @@ export class OrderService {
       .andWhere('ordIt.id = :prodId', { prodId: updateOrderDto.productId })
       .getOne();
 
+    if (!product) {
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+    }
+    if (!curOrder) {
+      throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+    }
+
     const priceDifference =
       (updateOrderDto.newQuantity - updateOrderDto.oldQuantity) * product.price;
     curOrder.totalPrice += priceDifference;
@@ -78,6 +92,14 @@ export class OrderService {
   async removeItem(orderId: number, productId: number) {
     const curOrder = await this.findOneOrder(orderId);
     const product = await this.productService.findOne(productId);
+
+    if (!product) {
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+    }
+    if (!curOrder) {
+      throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+    }
+
     curOrder.orderItems = curOrder.orderItems.filter(
       (item) => item.id !== productId,
     );
